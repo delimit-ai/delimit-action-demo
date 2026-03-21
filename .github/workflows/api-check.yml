@@ -1,0 +1,21 @@
+name: API Contract Check
+on:
+  pull_request:
+    paths:
+      - 'openapi.yaml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  delimit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: delimit-ai/delimit-action@v1
+        with:
+          spec: openapi.yaml
+          mode: advisory
