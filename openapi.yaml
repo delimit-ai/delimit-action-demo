@@ -6,6 +6,20 @@ paths:
   /users:
     get:
       summary: List users
+      security:
+        - bearerAuth: [read:users]
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, pending]
       responses:
         "200":
           description: User list
@@ -17,24 +31,29 @@ paths:
                   $ref: "#/components/schemas/User"
     post:
       summary: Create user
+      security:
+        - bearerAuth: [write:users]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/CreateUser"
       responses:
         "201":
           description: Created
   /users/{userId}:
     get:
-      summary: Get user
+      summary: Get user by ID
+      security:
+        - bearerAuth: [read:users]
       parameters:
         - name: userId
           in: path
           required: true
           schema:
             type: string
+            maxLength: 36
       responses:
         "200":
           description: A user
@@ -44,6 +63,8 @@ paths:
                 $ref: "#/components/schemas/User"
     delete:
       summary: Delete user
+      security:
+        - bearerAuth: [write:users]
       parameters:
         - name: userId
           in: path
@@ -53,18 +74,67 @@ paths:
       responses:
         "204":
           description: Deleted
+  /users/{userId}/avatar:
+    put:
+      summary: Upload avatar
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: Avatar updated
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     User:
       type: object
-      required: [id, email]
+      required: [id, email, name]
       properties:
         id:
           type: string
+          maxLength: 36
         email:
           type: string
+          format: email
         name:
           type: string
+          minLength: 1
+          maxLength: 100
         role:
           type: string
           enum: [admin, editor, viewer]
+          default: viewer
+        status:
+          type: string
+          enum: [active, inactive, pending]
+        created_at:
+          type: string
+          format: date-time
+    CreateUser:
+      type: object
+      required: [email, name]
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+          default: viewer
