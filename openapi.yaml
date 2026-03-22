@@ -1,25 +1,24 @@
 openapi: "3.0.3"
 info:
   title: Users API
-  version: "1.0.0"
+  version: "2.0.0"
 paths:
   /users:
     get:
       summary: List users
-      security:
-        - bearerAuth: [read:users]
+      deprecated: true
       parameters:
         - name: limit
           in: query
-          required: false
+          required: true
           schema:
-            type: integer
-            maximum: 100
+            type: string
+            maximum: 50
         - name: status
           in: query
           schema:
             type: string
-            enum: [active, inactive, pending]
+            enum: [active, inactive]
       responses:
         "200":
           description: User list
@@ -52,8 +51,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            maxLength: 36
+            type: integer
       responses:
         "200":
           description: A user
@@ -61,37 +59,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-    delete:
-      summary: Delete user
+  /v2/users:
+    get:
+      summary: List users (v2)
       security:
-        - bearerAuth: [write:users]
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Deleted
-  /users/{userId}/avatar:
-    put:
-      summary: Upload avatar
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          image/png:
-            schema:
-              type: string
-              format: binary
+        - bearerAuth: [read:users]
       responses:
         "200":
-          description: Avatar updated
+          description: User list
 components:
   securitySchemes:
     bearerAuth:
@@ -101,40 +76,43 @@ components:
   schemas:
     User:
       type: object
-      required: [id, email, name]
+      required: [id, email, name, tenant_id]
       properties:
         id:
-          type: string
-          maxLength: 36
+          type: integer
         email:
           type: string
           format: email
         name:
           type: string
-          minLength: 1
-          maxLength: 100
+          minLength: 2
+          maxLength: 50
         role:
           type: string
-          enum: [admin, editor, viewer]
-          default: viewer
+          enum: [admin, viewer]
+          default: admin
         status:
           type: string
-          enum: [active, inactive, pending]
+          enum: [active, inactive]
+        tenant_id:
+          type: string
         created_at:
           type: string
           format: date-time
     CreateUser:
       type: object
-      required: [email, name]
+      required: [email, name, tenant_id]
       properties:
         email:
           type: string
           format: email
         name:
           type: string
-          minLength: 1
-          maxLength: 100
+          minLength: 2
+          maxLength: 50
         role:
           type: string
-          enum: [admin, editor, viewer]
-          default: viewer
+          enum: [admin, viewer]
+          default: admin
+        tenant_id:
+          type: string
