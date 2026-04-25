@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: delimit-ai/delimit-action@v1.11.2
+      - uses: delimit-ai/delimit-action@v1
         with:
           spec: openapi.yaml
           mode: advisory
