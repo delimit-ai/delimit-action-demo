@@ -101,11 +101,10 @@ components:
   schemas:
     User:
       type: object
-      required: [id, email, name]
+      required: [id, email, name, organization_id]
       properties:
         id:
-          type: string
-          maxLength: 36
+          type: integer
         email:
           type: string
           format: email
@@ -113,6 +112,8 @@ components:
           type: string
           minLength: 1
           maxLength: 100
+        organization_id:
+          type: string
         role:
           type: string
           enum: [admin, editor, viewer]
