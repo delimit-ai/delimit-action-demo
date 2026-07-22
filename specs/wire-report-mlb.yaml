@@ -484,7 +484,6 @@ components:
       - model_version
       - model_win_probability_home
       - model_win_probability_away
-      - confidence_score
       - volatility_score
       - fantasy_environment_score
       - signal_label
@@ -531,12 +530,6 @@ components:
           maximum: 1
           description: Model-derived away team win probability
           example: 0.46
-        confidence_score:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: Model confidence in the signal
-          example: 0.72
         volatility_score:
           type: number
           minimum: 0
